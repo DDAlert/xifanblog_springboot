@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chuanhao.blog.dao.LogIpRecordDao">
+
+    <resultMap id="BaseResultMap" type="com.chuanhao.blog.entity.LogIpRecord">
+        <id column="ip_record_id" property="ipRecordId"/>
+        <result column="ip" property="ip"/>
+        <result column="user_name" property="userName"/>
+        <result column="createTime" property="createTime"/>
+        <result column="logCount" property="logCount"/>
+    </resultMap>
+
+    <sql id="tb">ip_record</sql>
+    <insert id="insert" parameterType="com.chuanhao.blog.entity.LogIpRecord" useGeneratedKeys="true" keyProperty="ipRecordId">
+        insert into
+        <include refid="tb"/>
+        (ip_record_id,ip,user_name,create_time,log_count)
+        values
+        (#{ipRecordId},#{ip},#{userName},#{createTime},#{logCount})
+    </insert>
+    <update id="update" parameterType="com.chuanhao.blog.entity.LogIpRecord">
+        update
+        <include refid="tb"/>
+        set
+        create_time = #{createTime},
+        log_count = #{logCount}
+        where
+        ip = #{ip}
+    </update>
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        ip_record.*
+        from
+        <include refid="tb"/>
+        <where>
+            <if test="ipRecordId != null">ip_record_id = #{ipRecordId} and </if>
+            <if test="ip != null">ip = #{ip} and </if>
+            <if test="userName != null">user_name = #{userName} and </if>
+            <if test="createTime != null">create_time = #{createTime} and </if>
+            <if test="logCount != null">log_count = #{logCount} and </if>
+            1=1
+        </where>
+    </select>
+    <select id="getRecordByIp" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        ip_record.*
+        from
+        <include refid="tb"/>
+        where ip = #{ip}
+    </select>
+</mapper>

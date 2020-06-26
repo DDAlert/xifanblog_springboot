@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chuanhao.blog.dao.CommentDao">
+
+    <sql id="tb">comment</sql>
+
+    <sql id="Base_Column_List">
+    comment_id, comment_pid, comment_pname, comment_article_id, comment_author_name,
+    comment_author_email, comment_author_url, comment_author_avatar, comment_content, comment_agent,
+     comment_ip,comment_create_time, comment_role
+    </sql>
+
+    <insert id="insert" parameterType="com.chuanhao.blog.entity.Comment" useGeneratedKeys="true" keyProperty="commentId">
+        insert into
+        <include refid="tb"/>
+        (comment_pid, comment_pname, comment_article_id,
+        comment_author_name, comment_author_email,
+        comment_author_url, comment_author_avatar, comment_content, comment_agent,
+        comment_ip, comment_create_time, comment_role)
+        values (#{commentPid,jdbcType=INTEGER}, #{commentPname,jdbcType=VARCHAR}, #{commentArticleId,jdbcType=INTEGER},
+        #{commentAuthorName,jdbcType=VARCHAR}, #{commentAuthorEmail,jdbcType=VARCHAR},
+        #{commentAuthorUrl,jdbcType=VARCHAR},#{commentAuthorAvatar}, #{commentContent,jdbcType=VARCHAR},
+        #{commentAgent,jdbcType=VARCHAR},
+        #{commentIp,jdbcType=VARCHAR}, #{commentCreateTime,jdbcType=TIMESTAMP}, #{commentRole,jdbcType=INTEGER})
+    </insert>
+    <update id="update" parameterType="com.chuanhao.blog.entity.Comment">
+        update
+        <include refid="tb"/>
+        <set>
+            <if test="commentPid != null">comment_pid = #{commentPid,jdbcType=INTEGER},</if>
+            <if test="commentPname != null">comment_pname = #{commentPname,jdbcType=VARCHAR},</if>
+            <if test="commentArticleId != null">comment_article_id = #{commentArticleId,jdbcType=INTEGER},</if>
+            <if test="commentAuthorName != null">comment_author_name = #{commentAuthorName,jdbcType=VARCHAR},</if>
+            <if test="commentAuthorEmail != null">comment_author_email = #{commentAuthorEmail,jdbcType=VARCHAR},</if>
+            <if test="commentAuthorUrl != null">comment_author_url = #{commentAuthorUrl,jdbcType=VARCHAR},</if>
+            <if test="commentContent != null">comment_content = #{commentContent,jdbcType=VARCHAR},</if>
+            <if test="commentAgent != null">comment_agent = #{commentAgent,jdbcType=VARCHAR},</if>
+            <if test="commentIp != null">comment_ip = #{commentIp,jdbcType=VARCHAR},</if>
+            <if test="commentCreateTime != null">comment_create_time = #{commentCreateTime,jdbcType=TIMESTAMP},</if>
+            <if test="commentAuthorAvatar != null">comment_author_avatar = #{commentAuthorAvatar},</if>
+            <if test="commentRole != null">comment_role = #{commentRole,jdbcType=INTEGER},</if>
+        </set>
+        where comment_id = #{commentId,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteById">
+        delete from
+        <include refid="tb"/>
+        where comment_id = #{commentId,jdbcType=INTEGER}
+    </delete>
+    <select id="getCommentById" resultType="com.chuanhao.blog.entity.Comment" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        <include refid="tb"/>
+        where comment_id = #{commentId,jdbcType=INTEGER}
+    </select>
+    <select id="listCommentByArticleId" resultType="com.chuanhao.blog.entity.Comment">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE
+        comment_article_id = #{id}
+        ORDER BY comment_id ASC
+    </select>
+    <select id="listComment" resultType="com.chuanhao.blog.entity.Comment">
+
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        ORDER BY comment_id DESC
+    </select>
+    <select id="countComment" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(*) FROM
+        <include refid="tb"/>
+    </select>
+    <select id="listRecentComment" resultType="com.chuanhao.blog.entity.Comment" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE comment_role = 0
+        ORDER BY comment_id DESC
+        LIMIT #{limit}
+    </select>
+    <select id="listChildComment" resultType="com.chuanhao.blog.entity.Comment">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tb"/>
+        WHERE
+        comment_pid=#{id}
+    </select>
+</mapper>
